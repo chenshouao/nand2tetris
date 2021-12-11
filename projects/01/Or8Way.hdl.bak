@@ -20,5 +20,5 @@ CHIP Or8Way {
 	Or(a = in[6], b = in[7], out = one3);
 	Or(a = one0, b = one1, out = one4);
 	Or(a = one2, b = one3, out = one5);
-	Or(a = one4, b = one5, out = out);
+	
 }
