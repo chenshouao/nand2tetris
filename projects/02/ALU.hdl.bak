@@ -164,7 +164,7 @@ CHIP ALU {
 	And(a = tempSum12, b = f, out = carry12);
 	And(a = tempSum13, b = f, out = carry13);
 	And(a = tempSum14, b = f, out = carry14);
-	And(a = tempSum15, b = f, out = carry15);
+	And(a = tempSum15, b = f, out = carry15)
 	
 	Add16(a[0] = sum0,a[1] = sum1,a[2] = sum2,a[3] = sum3,a[4] = sum4,a[5] = sum5,a[6] = sum6,a[7] = sum7,a[8] = sum8,a[9] = sum9,a[10] = sum10,a[11] = sum11,a[12] = sum12,a[13] = sum13,a[14] = sum14,a[15] = sum15,b[0] = carry0,b[1] = carry1,b[2] = carry2,b[3] = carry3,b[4] = carry4,b[5] = carry5,b[6] = carry6,b[7] = carry7,b[8] = carry8,b[9] = carry9,b[10] = carry10,b[11] = carry11,b[12] = carry12,b[13] = carry13,b[14] = carry14,b[15] = carry15,out[0] = tmpOut0,out[1] = tmpOut1,out[2] = tmpOut2,out[3] = tmpOut3,out[4] = tmpOut4,out[5] = tmpOut5,out[6] = tmpOut6,out[7] = tmpOut7,out[8] = tmpOut8,out[9] = tmpOut9,out[10] = tmpOut10,out[11] = tmpOut11,out[12] = tmpOut12,out[13] = tmpOut13,out[14] = tmpOut14,out[15] = tmpOut15);
 	
