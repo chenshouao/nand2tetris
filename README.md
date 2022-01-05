@@ -14,7 +14,7 @@ This repository is for recording the learning of nand2tetris, which is for incre
 
 
 
-单路Multiplexor
+##### 单路Multiplexor
 
 ```vhdl
 out = a if sel == 0
@@ -38,7 +38,7 @@ CHIP Mux {
 }
 ```
 
-16位单路Multiplexor
+##### 16位单路Multiplexor
 
 ```vhdl
 CHIP Mux16 {
@@ -66,7 +66,7 @@ CHIP Mux16 {
 }
 ```
 
-4路16位Multiplexor
+##### 4路16位Multiplexor
 
 ```vhdl
 CHIP Mux4Way16 {
@@ -81,7 +81,7 @@ CHIP Mux4Way16 {
 }
 ```
 
-8路16位Multiplexor
+##### 8路16位Multiplexor
 
 ```vhdl
 CHIP Mux8Way16 {
@@ -98,7 +98,7 @@ CHIP Mux8Way16 {
 }
 ```
 
-单路DeMultiplexor
+##### 单路DeMultiplexor
 
 ```vhdl
 {a, b} = {in, 0} if sel == 0
@@ -123,7 +123,7 @@ CHIP DMux {
 }
 ```
 
-4路DeMultiplexor
+##### 4路DeMultiplexor
 
 ```vhdl
 CHIP DMux4Way {
@@ -139,7 +139,7 @@ CHIP DMux4Way {
 }
 ```
 
-8路DeMultiplexor
+##### 8路DeMultiplexor
 
 ```vhdl
 CHIP DMux8Way {
@@ -164,7 +164,7 @@ CHIP DMux8Way {
 
 ## project02
 
-半加器
+##### 半加器
 
 a xor b 的结果是不进位的加法，进位用 a and b 计算。
 
@@ -183,7 +183,7 @@ CHIP HalfAdder {
 
 
 
-全加器
+##### 全加器
 
 用两个半加器实现，注意进位要用两个进位或。(3个bit相加不可能进位两次)
 
@@ -202,7 +202,7 @@ CHIP FullAdder {
 
 
 
-加法器
+##### 加法器
 
 串行进位加法器，并没有实现超前进位的，所以效率会比较低。
 
@@ -232,7 +232,7 @@ CHIP Add16 {
 }
 ```
 
-增1器
+##### 增1器
 
 用16位加法器的思路实现。
 
@@ -262,7 +262,7 @@ CHIP Inc16 {
 }
 ```
 
-ALU
+##### ALU
 
 比较重量级，我把16位分开写的，写了200行左右，不过我是先写一行，再用C++生成16行不同参数的。
 
@@ -460,5 +460,132 @@ CHIP ALU {
 	Or(a = false, b = out13, out = out[13]);
 	Or(a = false, b = out14, out = out[14]);
 	Or(a = false, b = out15, out = out[15]);
+}
+```
+
+## project03
+
+##### 位存储单元Bit
+
+利用D触发器实现时序逻辑(将D触发器作为基本元件使用)，当load位为1时，输出为in，否则为上一个时钟的out。可以作为基本的存储位使用。
+
+```vhdl
+CHIP Bit {
+    IN in, load;
+    OUT out;
+
+    PARTS:
+    // Put your code here:
+	Mux(a = dffout, b = in, sel = load, out = muxOut);
+	DFF(in = muxOut, out = dffout, out = out);
+}
+```
+
+##### 寄存器Register
+
+```vhdl
+/**
+ * 16-bit register:
+ * If load[t] == 1 then out[t+1] = in[t]
+ * else out does not change
+ */
+
+CHIP Register {
+    IN in[16], load;
+    OUT out[16];
+
+    PARTS:
+    // Put your code here:
+	Bit(in = in[0], load = load, out = out[0]);
+	Bit(in = in[1], load = load, out = out[1]);
+	Bit(in = in[2], load = load, out = out[2]);
+	Bit(in = in[3], load = load, out = out[3]);
+	Bit(in = in[4], load = load, out = out[4]);
+	Bit(in = in[5], load = load, out = out[5]);
+	Bit(in = in[6], load = load, out = out[6]);
+	Bit(in = in[7], load = load, out = out[7]);
+	Bit(in = in[8], load = load, out = out[8]);
+	Bit(in = in[9], load = load, out = out[9]);
+	Bit(in = in[10], load = load, out = out[10]);
+	Bit(in = in[11], load = load, out = out[11]);
+	Bit(in = in[12], load = load, out = out[12]);
+	Bit(in = in[13], load = load, out = out[13]);
+	Bit(in = in[14], load = load, out = out[14]);
+	Bit(in = in[15], load = load, out = out[15]);
+}
+```
+
+##### 程序计数器PC
+
+根据状态字选择最后的值，最后load到寄存器中实现时序逻辑。
+
+```vhdl
+/**
+ * A 16-bit counter with load and reset control bits.
+ * if      (reset[t] == 1) out[t+1] = 0
+ * else if (load[t] == 1)  out[t+1] = in[t]
+ * else if (inc[t] == 1)   out[t+1] = out[t] + 1  (integer addition)
+ * else                    out[t+1] = out[t]
+ */
+
+CHIP PC {
+    IN in[16],load,inc,reset;
+    OUT out[16];
+
+    PARTS:
+    // Put your code here:
+	Inc16(in = finalOut, out = incOut);
+	Mux16(a = finalOut, b = incOut, sel = inc, out = firstOut);
+	Mux16(a = firstOut, b = in, sel = load, out = secondOut);
+	Mux16(a = secondOut, b[0] = false,b[1] = false,b[2] = false,b[3] = false,b[4] = false,b[5] = false,b[6] = false,b[7] = false,
+		b[8] = false,b[9] = false,b[10] = false,b[11] = false,b[12] = false,b[13] = false,b[14] = false,b[15] = false, sel = reset, out = thirdOut);
+	Register(in = thirdOut, load = true, out = finalOut, out = out);
+}
+```
+
+##### 存储芯片RAM
+
+主要是译码器的使用，最后一层层用8-3/3-8译码器和4-2/2-4译码器嵌套到了16k的RAM。
+
+```vhdl
+/**
+ * Memory of 8 registers, each 16 bit-wide. Out holds the value
+ * stored at the memory location specified by address. If load==1, then 
+ * the in value is loaded into the memory location specified by address 
+ * (the loaded value will be emitted to out from the next time step onward).
+ */
+
+CHIP RAM8 {
+    IN in[16], load, address[3];
+    OUT out[16];
+
+    PARTS:
+    // Put your code here:
+	DMux8Way(in = load, sel = address, a = load0,  b = load1,  c = load2,  d = load3,  e = load4,  f = load5,  g = load6, h = load7);
+	Register(in = in, load = load0, out = out0);
+	Register(in = in, load = load1, out = out1);
+	Register(in = in, load = load2, out = out2);
+	Register(in = in, load = load3, out = out3);
+	Register(in = in, load = load4, out = out4);
+	Register(in = in, load = load5, out = out5);
+	Register(in = in, load = load6, out = out6);
+	Register(in = in, load = load7, out = out7);
+	Mux8Way16(a = out0,  b = out1,  c = out2,  d = out3,  e = out4,  f = out5,  g = out6, h = out7, sel = address, out = out);
+}
+```
+
+```vhdl
+CHIP RAM16K {
+    IN in[16], load, address[14];
+    OUT out[16];
+
+    PARTS:
+    // Put your code here:
+	DMux4Way(in = load, sel = address[12..13], a = load0,  b = load1,  c = load2,  d = load3);
+	RAM4K(in = in, load = load0, address = address[0..11], out = out0);
+	RAM4K(in = in, load = load1, address = address[0..11], out = out1);
+	RAM4K(in = in, load = load2, address = address[0..11], out = out2);
+	RAM4K(in = in, load = load3, address = address[0..11], out = out3);
+	Mux4Way16(a = out0,  b = out1,  c = out2,  d = out3, sel = address[12..13], out = out);
 }
 ```
