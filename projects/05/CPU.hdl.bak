@@ -41,7 +41,7 @@ CHIP CPU {
     PARTS:
     // Put your code here:
 
- 
+    And(a = true, b = instruction[15], out = instruction[15]); //A-instruction or C-instruction
     Mux16(a = instruction, b = aluoutput, sel = instruction[15], out = outmux1); //A-inst instruction is an address
 
     Mux(a = true, b = instruction[5], sel = instruction[15], out = loadareg); 

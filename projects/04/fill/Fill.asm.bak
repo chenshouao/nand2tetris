@@ -15,7 +15,6 @@
 
 	@KBD
 	D = M
-	
 	@CLEAR
 	D;JEQ
 	
@@ -48,7 +47,7 @@
 	D;JNE
 
 	@KBD
-	D = M
+	D = A
 	@CLEAR
 	D;JEQ
 	@FILL
@@ -80,7 +79,7 @@
 	D;JNE
 
 	@KBD
-	D = M
+	D = A
 	@CLEAR
 	D;JEQ
 	@FILL
